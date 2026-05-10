@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Forest FY27 Target Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+  <style>
+    :root {
+      --blue:       #114d5d;
+      --blue-light: #46717e;
+      --blue-grey:  #8ca6ae;
+      --grey:       #dde4e6;
+      --dark:       #0d2830;
+      --green-acc:  #26f0a3;
+      --teal-acc:   #16e7cf;
+      --white:      #ffffff;
+      --text:       #0d2830;
+      --text-muted: #46717e;
+      --border:     #dde4e6;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Anek Bangla', Arial, sans-serif;
+      background: #f0f4f5;
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* HEADER */
+    header {
+      background: var(--dark);
+      padding: 0 36px;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 3px solid var(--green-acc);
+    }
+    .header-left { display: flex; align-items: center; gap: 14px; }
+    .logo-box {
+      width: 42px; height: 42px; border-radius: 8px; overflow: hidden;
+      flex-shrink: 0;
+    }
+    .logo-box img { width: 100%; height: 100%; object-fit: cover; }
+    .header-text h1 {
+      font-size: 17px; font-weight: 700; color: var(--white);
+      letter-spacing: 0.4px; line-height: 1.2;
+    }
+    .header-text p {
+      font-size: 12px; color: var(--blue-grey); font-weight: 400;
+    }
+    .fy-tag {
+      background: rgba(38,240,163,0.12);
+      border: 1px solid rgba(38,240,163,0.35);
+      color: var(--green-acc);
+      border-radius: 20px;
+      padding: 5px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    /* LAYOUT */
+    .main { max-width: 1080px; margin: 0 auto; padding: 28px 20px; }
+
+    /* BONUS BANNER */
+    .bonus-banner {
+      background: var(--blue);
+      border-radius: 10px;
+      padding: 14px 22px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--white);
+      font-size: 13.5px;
+    }
+    .bonus-banner .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--green-acc); flex-shrink: 0;
+    }
+
+    /* COMPLETION BANNER */
+    .complete-banner {
+      display: none;
+      background: linear-gradient(120deg, var(--dark), var(--blue));
+      border: 1px solid var(--green-acc);
+      border-radius: 10px;
+      padding: 16px 22px;
+      margin-bottom: 24px;
+      text-align: center;
+      color: var(--green-acc);
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+    .complete-banner.show { display: block; }
+
+    /* GAUGE CARDS */
+    .gauges-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .card {
+      background: var(--white);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 24px 22px 18px;
+      box-shadow: 0 1px 6px rgba(17,77,93,0.07);
+    }
+    .card-label {
+      font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 1px;
+      color: var(--blue-grey); margin-bottom: 2px;
+    }
+    .card-title {
+      font-size: 16px; font-weight: 700;
+      color: var(--blue); margin-bottom: 14px;
+    }
+    .gauge-wrap {
+      position: relative;
+      max-width: 260px;
+      margin: 0 auto;
+    }
+    .gauge-center {
+      position: absolute;
+      bottom: 8px; left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      pointer-events: none;
+    }
+    .gauge-num {
+      font-size: 30px; font-weight: 700;
+      color: var(--dark); line-height: 1;
+    }
+    .gauge-unit { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .gauge-tgt  { font-size: 11px; color: var(--blue-grey); margin-top: 3px; }
+
+    .pbar-wrap {
+      background: var(--grey);
+      border-radius: 999px; height: 5px;
+      margin-top: 10px; overflow: hidden;
+    }
+    .pbar-fill {
+      height: 100%; border-radius: 999px;
+      background: var(--blue);
+      transition: width 0.5s ease;
+    }
+
+    .stat-row {
+      display: flex; justify-content: space-between;
+      margin-top: 14px; padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+    .stat { text-align: center; }
+    .stat-val {
+      font-size: 17px; font-weight: 700;
+      color: var(--blue);
+    }
+    .stat-val.warn  { color: #d97706; }
+    .stat-val.low   { color: #dc2626; }
+    .stat-lbl { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+
+    /* BOTTOM GRID */
+    .bottom-row {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 20px;
+    }
+    .form-title {
+      font-size: 14px; font-weight: 700;
+      color: var(--blue); margin-bottom: 18px;
+    }
+    .fg { margin-bottom: 14px; }
+    label {
+      display: block; font-size: 12px; font-weight: 600;
+      color: var(--text); margin-bottom: 5px;
+    }
+    input, select {
+      width: 100%; padding: 9px 11px;
+      border: 1px solid var(--border); border-radius: 7px;
+      font-family: 'Anek Bangla', Arial, sans-serif;
+      font-size: 13px; color: var(--text); background: white;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(17,77,93,0.1);
+    }
+    .btn {
+      width: 100%; padding: 11px;
+      background: var(--blue); color: white;
+      border: none; border-radius: 8px;
+      font-family: 'Anek Bangla', Arial, sans-serif;
+      font-size: 14px; font-weight: 700;
+      cursor: pointer; transition: background 0.15s;
+      letter-spacing: 0.3px;
+    }
+    .btn:hover { background: var(--dark); }
+
+    /* TABLE */
+    .tbl-title {
+      font-size: 14px; font-weight: 700;
+      color: var(--blue); margin-bottom: 14px;
+    }
+    .tbl-scroll { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead th {
+      text-align: left; padding: 8px 10px;
+      background: #edf3f5;
+      color: var(--blue); font-weight: 700;
+      font-size: 11px; text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid var(--border);
+    }
+    tbody td {
+      padding: 10px 10px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: #f5f9fa; }
+
+    .badge {
+      display: inline-block; padding: 2px 9px;
+      border-radius: 10px; font-size: 11px; font-weight: 700;
+    }
+    .badge.pv      { background: #dcfce7; color: #166534; }
+    .badge.bess    { background: #dbeafe; color: #1e3a8a; }
+    .badge.pv-bess { background: #f3e8ff; color: #6b21a8; }
+
+    .del-btn, .edit-btn {
+      background: none; border: none; cursor: pointer;
+      font-size: 14px; padding: 2px 5px; border-radius: 4px;
+    }
+    .del-btn  { color: #cbd5e1; }
+    .del-btn:hover  { color: #dc2626; }
+    .edit-btn { color: #8ca6ae; }
+    .edit-btn:hover { color: #114d5d; }
+
+    .btn-row { display: flex; gap: 8px; }
+    .btn-cancel {
+      flex: 1; padding: 11px;
+      background: white; color: var(--blue);
+      border: 1px solid var(--border); border-radius: 8px;
+      font-family: 'Anek Bangla', Arial, sans-serif;
+      font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: background 0.15s;
+      display: none;
+    }
+    .btn-cancel.show { display: block; }
+    .btn { flex: 2; }
+
+    .empty {
+      text-align: center; padding: 30px;
+      color: var(--blue-grey); font-size: 13px;
+    }
+
+    .monthly-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .monthly-row .card-title {
+      margin-bottom: 16px;
+    }
+    .no-data-msg {
+      text-align: center;
+      padding: 28px 0;
+      color: var(--blue-grey);
+      font-size: 13px;
+    }
+
+    @media (max-width: 680px) {
+      .gauges-row, .bottom-row, .monthly-row { grid-template-columns: 1fr; }
+      header { padding: 0 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="logo-box">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgoAAAHhCAYAAAAPqpaJAAAAAXNSR0IArs4c6QAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAACCqADAAQAAAABAAAB4QAAAACJPNQnAAAqdklEQVR4Ae3df6wlZ3kf8Lje/wI7YCdgRELSNAlOIcGkIAgKVZAChD/KGlnIkVIvQk1NFSIi80cIwpaD88NrOds/sIRI1SCqREaRSBCKQWoTQlraUhla0tq0uFrLCAgB2STxUtthbcfe7HPx671775l7Z86ZH++872cUcvbOzHnneT/PeP31nHNnti49/JZTjYUAAQIECBBYIXCOFesIECBAgAABAgQEBecAAQIECBAg0CogKLTS2ECAAl//uwYAAP//AAAA//8DAFBLAwQUAAAICABHhFpU..." alt="Forest Energy" />
+    </div>
+    <div class="header-text">
+      <h1>Forest FY27 Target Dashboard</h1>
+      <p>Company-wide bonus threshold tracker</p>
+    </div>
+  </div>
+  <div class="fy-tag">FY 2027</div>
+</header>
+
+<div class="main">
+
+  <div class="bonus-banner">
+    <div class="dot"></div>
+    <span><strong>Bonus threshold:</strong> Both targets must be reached before any bonuses are paid. PV = 6 000 kWp and BESS = 8 000 kWh.</span>
+  </div>
+
+  <div id="completeBanner" class="complete-banner">
+    Both targets achieved. Bonus threshold unlocked.
+  </div>
+
+  <div class="gauges-row">
+    <div class="card">
+      <div class="card-label">Target 1</div>
+      <div class="card-title">Solar PV</div>
+      <div class="gauge-wrap">
+        <canvas id="pvGauge" height="150"></canvas>
+        <div class="gauge-center">
+          <div class="gauge-num" id="pvVal">0.00</div>
+          <div class="gauge-unit">kWp closed</div>
+          <div class="gauge-tgt">Target: 6 000 kWp</div>
+        </div>
+      </div>
+      <div class="pbar-wrap"><div class="pbar-fill" id="pvBar" style="width:0%"></div></div>
+      <div class="stat-row">
+        <div class="stat">
+          <div class="stat-val low" id="pvPct">0%</div>
+          <div class="stat-lbl">Complete</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val" id="pvRem">6 000</div>
+          <div class="stat-lbl">kWp remaining</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val" id="pvCount">0</div>
+          <div class="stat-lbl">Projects</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Target 2</div>
+      <div class="card-title">Battery Storage (BESS)</div>
+      <div class="gauge-wrap">
+        <canvas id="bessGauge" height="150"></canvas>
+        <div class="gauge-center">
+          <div class="gauge-num" id="bessVal">0.00</div>
+          <div class="gauge-unit">kWh closed</div>
+          <div class="gauge-tgt">Target: 8 000 kWh</div>
+        </div>
+      </div>
+      <div class="pbar-wrap"><div class="pbar-fill" id="bessBar" style="width:0%"></div></div>
+      <div class="stat-row">
+        <div class="stat">
+          <div class="stat-val low" id="bessPct">0%</div>
+          <div class="stat-lbl">Complete</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val" id="bessRem">8 000</div>
+          <div class="stat-lbl">kWh remaining</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val" id="bessCount">0</div>
+          <div class="stat-lbl">Projects</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="monthly-row">
+    <div class="card">
+      <div class="card-label">Monthly Breakdown</div>
+      <div class="card-title">Solar PV (kWp)</div>
+      <div id="pvMonthWrap"><div class="no-data-msg">No data yet.</div></div>
+    </div>
+    <div class="card">
+      <div class="card-label">Monthly Breakdown</div>
+      <div class="card-title">Battery Storage / BESS (kWh)</div>
+      <div id="bessMonthWrap"><div class="no-data-msg">No data yet.</div></div>
+    </div>
+  </div>
+
+  <div class="bottom-row">
+    <div class="card">
+      <div class="form-title">Add Closed Deal</div>
+
+      <div class="fg">
+        <label for="pName">Project Name</label>
+        <input type="text" id="pName" placeholder="e.g. Stellenbosch Industrial Park" />
+      </div>
+      <div class="fg">
+        <label for="pType">Type</label>
+        <select id="pType">
+          <option value="pv">Solar PV only</option>
+          <option value="bess">BESS only</option>
+          <option value="both">PV + BESS (combined)</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label for="pDate">Month Closed</label>
+        <input type="month" id="pDate" />
+      </div>
+
+      <div class="fg" id="pvSizeGrp">
+        <label for="pvSz">PV Size (kWp)</label>
+        <input type="number" id="pvSz" placeholder="e.g. 500" step="1" min="0" />
+      </div>
+      <div class="fg" id="bessSizeGrp" style="display:none">
+        <label for="bessSz">BESS Size (kWh)</label>
+        <input type="number" id="bessSz" placeholder="e.g. 1000" step="1" min="0" />
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-cancel" id="cancelBtn" onclick="cancelEdit()">Cancel</button>
+        <button class="btn" id="submitBtn" onclick="addProject()">Add Project</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="tbl-title">Closed Deals</div>
+      <div class="tbl-scroll" id="tableWrap">
+        <div class="empty">No deals added yet.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+Chart.register(ChartDataLabels);
+const PV_TGT = 6000, BESS_TGT = 8000;
+let projects = JSON.parse(localStorage.getItem('fe_fy27') || '[]');
+let pvChart, bessChart, pvMonthChart, bessMonthChart;
+
+function gauge(ctx, color) {
+  return new Chart(ctx, {
+    type: 'doughnut',
+    data: { datasets: [{ data: [0, 100], backgroundColor: [color, '#dde4e6'], borderWidth: 0, circumference: 180, rotation: 270 }] },
+    options: { responsive: true, cutout: '74%', plugins: { legend: { display: false }, tooltip: { enabled: false }, datalabels: { display: false } }, animation: { duration: 500 } }
+  });
+}
+
+function gColor(pct) {
+  if (pct >= 100) return '#26f0a3';
+  if (pct >= 60)  return '#114d5d';
+  if (pct >= 30)  return '#46717e';
+  return '#8ca6ae';
+}
+
+function pClass(pct) {
+  if (pct >= 100) return 'stat-val';
+  if (pct >= 50)  return 'stat-val warn';
+  return 'stat-val low';
+}
+
+function sortKey(p) {
+  if (p.monthKey) return p.monthKey;
+  if (p.month) {
+    const d = new Date(p.month + ' 1');
+    if (!isNaN(d)) return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+  }
+  return p.date || '';
+}
+
+function getMonthData(field) {
+  const map = {};
+  projects.forEach(p => {
+    if (p[field] > 0) {
+      const key = sortKey(p);
+      if (!map[key]) map[key] = { label: p.month || key, total: 0 };
+      map[key].total += p[field];
+    }
+  });
+  const sorted = Object.entries(map).sort((a, b) => a[0] < b[0] ? -1 : 1);
+  return { labels: sorted.map(e => e[1].label), data: sorted.map(e => e[1].total) };
+}
+
+function buildMonthChart(wrapId, field, barColor) {
+  const wrap = document.getElementById(wrapId);
+  const { labels, data } = getMonthData(field);
+
+  if (!labels.length) {
+    wrap.innerHTML = '<div class="no-data-msg">No data yet.</div>';
+    return null;
+  }
+
+  wrap.innerHTML = '<canvas></canvas>';
+  const ctx = wrap.querySelector('canvas').getContext('2d');
+
+  return new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        data,
+        backgroundColor: barColor,
+        borderRadius: 4,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: { enabled: false },
+        datalabels: {
+          anchor: 'end',
+          align: 'end',
+          color: '#114d5d',
+          font: { family: "'Anek Bangla', Arial, sans-serif", weight: '700', size: 11 },
+          formatter: v => v.toLocaleString('en-ZA')
+        }
+      },
+      scales: {
+        y: { display: false, grid: { display: false } },
+        x: {
+          grid: { display: false },
+          ticks: {
+            color: '#46717e',
+            font: { family: "'Anek Bangla', Arial, sans-serif", size: 11 }
+          }
+        }
+      },
+      layout: { padding: { top: 24 } }
+    }
+  });
+}
+
+function refresh() {
+  let pvT = 0, bessT = 0, pvN = 0, bessN = 0;
+  projects.forEach(p => {
+    if (p.pv > 0)   { pvT += p.pv;     pvN++; }
+    if (p.bess > 0) { bessT += p.bess;  bessN++; }
+  });
+
+  const pvP  = Math.min((pvT / PV_TGT) * 100, 100);
+  const bessP = Math.min((bessT / BESS_TGT) * 100, 100);
+
+  [pvChart, bessChart].forEach((c, i) => {
+    const p = i === 0 ? pvP : bessP;
+    const col = gColor(p);
+    c.data.datasets[0].data = [p, 100 - p];
+    c.data.datasets[0].backgroundColor[0] = col;
+    c.update();
+  });
+
+  set('pvVal', pvT.toFixed(0));
+  set('pvPct', Math.round(pvP) + '%', pClass(pvP));
+  set('pvRem', Math.max(PV_TGT - pvT, 0).toFixed(0));
+  set('pvCount', pvN);
+  bar('pvBar', pvP, gColor(pvP));
+
+  set('bessVal', bessT.toFixed(0));
+  set('bessPct', Math.round(bessP) + '%', pClass(bessP));
+  set('bessRem', Math.max(BESS_TGT - bessT, 0).toFixed(0));
+  set('bessCount', bessN);
+  bar('bessBar', bessP, gColor(bessP));
+
+  const banner = document.getElementById('completeBanner');
+  banner.classList.toggle('show', pvT >= PV_TGT && bessT >= BESS_TGT);
+
+  if (pvMonthChart)   { pvMonthChart.destroy();   pvMonthChart = null; }
+  if (bessMonthChart) { bessMonthChart.destroy(); bessMonthChart = null; }
+  pvMonthChart   = buildMonthChart('pvMonthWrap',   'pv',   '#26f0a3');
+  bessMonthChart = buildMonthChart('bessMonthWrap', 'bess', '#16e7cf');
+
+  renderTable();
+}
+
+function set(id, val, cls) {
+  const el = document.getElementById(id);
+  el.textContent = val;
+  if (cls) el.className = cls;
+}
+
+function bar(id, pct, color) {
+  const el = document.getElementById(id);
+  el.style.width = pct + '%';
+  el.style.background = color;
+}
+
+function renderTable() {
+  const wrap = document.getElementById('tableWrap');
+  if (!projects.length) {
+    wrap.innerHTML = '<div class="empty">No deals added yet.</div>';
+    return;
+  }
+
+  // Sort chronologically oldest first
+  const sorted = projects
+    .map((p, i) => ({ ...p, idx: i }))
+    .sort((a, b) => sortKey(a) < sortKey(b) ? -1 : 1);
+
+  const rows = sorted.map(p => {
+    const tc = p.type === 'pv' ? 'pv' : p.type === 'bess' ? 'bess' : 'pv-bess';
+    const tl = p.type === 'pv' ? 'PV' : p.type === 'bess' ? 'BESS' : 'PV + BESS';
+    const sz = p.type === 'pv'
+      ? p.pv.toLocaleString('en-ZA') + ' kWp'
+      : p.type === 'bess'
+      ? p.bess.toLocaleString('en-ZA') + ' kWh'
+      : p.pv.toLocaleString('en-ZA') + ' kWp / ' + p.bess.toLocaleString('en-ZA') + ' kWh';
+    return `<tr>
+      <td>${p.name}</td>
+      <td><span class="badge ${tc}">${tl}</span></td>
+      <td>${sz}</td>
+      <td>${p.month || p.date || ''}</td>
+      <td>
+        <button class="edit-btn" onclick="startEdit(${p.idx})" title="Edit">&#9998;</button>
+        <button class="del-btn"  onclick="del(${p.idx})"       title="Remove">&#10005;</button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  wrap.innerHTML = `<table>
+    <thead><tr><th>Project</th><th>Type</th><th>Size</th><th>Month</th><th></th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table>`;
+}
+
+let editIdx = -1;
+
+function addProject() {
+  const name    = document.getElementById('pName').value.trim();
+  const type    = document.getElementById('pType').value;
+  const dateVal = document.getElementById('pDate').value;
+  const pv      = parseFloat(document.getElementById('pvSz').value) || 0;
+  const bess    = parseFloat(document.getElementById('bessSz').value) || 0;
+
+  if (!name)    { alert('Enter a project name.'); return; }
+  if (!dateVal) { alert('Select a month.'); return; }
+  if (type === 'pv'   && pv   <= 0) { alert('Enter a valid PV size.'); return; }
+  if (type === 'bess' && bess <= 0) { alert('Enter a valid BESS size.'); return; }
+  if (type === 'both' && pv <= 0 && bess <= 0) { alert('Enter at least one size.'); return; }
+
+  const d = new Date(dateVal + '-01T00:00:00');
+  const month = d.toLocaleDateString('en-ZA', { month: 'short', year: 'numeric' });
+  const entry = {
+    name, type,
+    pv:   type === 'bess' ? 0 : pv,
+    bess: type === 'pv'   ? 0 : bess,
+    monthKey: dateVal,
+    month
+  };
+
+  if (editIdx >= 0) {
+    projects[editIdx] = entry;
+    editIdx = -1;
+    document.getElementById('submitBtn').textContent = 'Add Project';
+    document.getElementById('cancelBtn').classList.remove('show');
+  } else {
+    projects.push(entry);
+  }
+
+  save();
+  refresh();
+  document.getElementById('pName').value  = '';
+  document.getElementById('pDate').value  = '';
+  document.getElementById('pvSz').value   = '';
+  document.getElementById('bessSz').value = '';
+}
+
+function startEdit(i) {
+  const p = projects[i];
+  editIdx = i;
+  document.getElementById('pName').value  = p.name;
+  document.getElementById('pType').value  = p.type;
+  document.getElementById('pDate').value  = p.monthKey || '';
+  document.getElementById('pvSz').value   = p.pv   > 0 ? p.pv   : '';
+  document.getElementById('bessSz').value = p.bess > 0 ? p.bess : '';
+  document.getElementById('pvSizeGrp').style.display   = p.type === 'bess' ? 'none' : '';
+  document.getElementById('bessSizeGrp').style.display = p.type === 'pv'   ? 'none' : '';
+  document.getElementById('submitBtn').textContent = 'Save Changes';
+  document.getElementById('cancelBtn').classList.add('show');
+  document.querySelector('.bottom-row').scrollIntoView({ behavior: 'smooth' });
+  document.getElementById('pName').focus();
+}
+
+function cancelEdit() {
+  editIdx = -1;
+  document.getElementById('pName').value  = '';
+  document.getElementById('pDate').value  = '';
+  document.getElementById('pvSz').value   = '';
+  document.getElementById('bessSz').value = '';
+  document.getElementById('submitBtn').textContent = 'Add Project';
+  document.getElementById('cancelBtn').classList.remove('show');
+}
+
+function del(i) {
+  if (!confirm('Remove "' + projects[i].name + '"?')) return;
+  projects.splice(i, 1);
+  save();
+  refresh();
+}
+
+function save() { localStorage.setItem('fe_fy27', JSON.stringify(projects)); }
+
+document.getElementById('pType').addEventListener('change', function () {
+  document.getElementById('pvSizeGrp').style.display   = this.value === 'bess' ? 'none' : '';
+  document.getElementById('bessSizeGrp').style.display = this.value === 'pv'   ? 'none' : '';
+});
+
+window.addEventListener('load', () => {
+  pvChart   = gauge(document.getElementById('pvGauge').getContext('2d'),   '#8ca6ae');
+  bessChart = gauge(document.getElementById('bessGauge').getContext('2d'), '#8ca6ae');
+  refresh();
+});
+</script>
+</body>
+</html>
