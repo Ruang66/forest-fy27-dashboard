@@ -295,7 +295,10 @@
       <p>Company-wide bonus threshold tracker</p>
     </div>
   </div>
-  <div class="fy-tag">FY 2027</div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <div class="fy-tag">FY 2027</div>
+    <a href="/logout" style="font-size:12px;color:rgba(255,255,255,0.5);text-decoration:none;padding:5px 12px;border:1px solid rgba(255,255,255,0.2);border-radius:20px;transition:color 0.15s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">Sign Out</a>
+  </div>
 </header>
 
 <div class="main">
@@ -429,9 +432,31 @@
 <script>
 Chart.register(ChartDataLabels);
 const PV_TGT = 6000, BESS_TGT = 8000;
-let projects = JSON.parse(localStorage.getItem('fe_fy27') || '[]');
+let projects = [];
 let pvChart, bessChart, pvMonthChart, bessMonthChart;
+let editId = null;
 
+// --- API ---
+async function loadProjects() {
+  const res = await fetch('/api/projects');
+  projects = await res.json();
+  projects = projects.map(p => ({ ...p, pv: parseFloat(p.pv), bess: parseFloat(p.bess) }));
+  refresh();
+}
+
+async function apiSave(data) {
+  const url    = editId ? `/api/projects/${editId}` : '/api/projects';
+  const method = editId ? 'PUT' : 'POST';
+  await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+  await loadProjects();
+}
+
+async function apiDelete(id) {
+  await fetch(`/api/projects/${id}`, { method: 'DELETE' });
+  await loadProjects();
+}
+
+// --- Charts ---
 function gauge(ctx, color) {
   return new Chart(ctx, {
     type: 'doughnut',
@@ -454,12 +479,12 @@ function pClass(pct) {
 }
 
 function sortKey(p) {
-  if (p.monthKey) return p.monthKey;
+  if (p.month_key) return p.month_key;
   if (p.month) {
     const d = new Date(p.month + ' 1');
     if (!isNaN(d)) return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
   }
-  return p.date || '';
+  return '';
 }
 
 function getMonthData(field) {
@@ -478,48 +503,21 @@ function getMonthData(field) {
 function buildMonthChart(wrapId, field, barColor) {
   const wrap = document.getElementById(wrapId);
   const { labels, data } = getMonthData(field);
-
-  if (!labels.length) {
-    wrap.innerHTML = '<div class="no-data-msg">No data yet.</div>';
-    return null;
-  }
-
+  if (!labels.length) { wrap.innerHTML = '<div class="no-data-msg">No data yet.</div>'; return null; }
   wrap.innerHTML = '<canvas></canvas>';
   const ctx = wrap.querySelector('canvas').getContext('2d');
-
   return new Chart(ctx, {
     type: 'bar',
-    data: {
-      labels,
-      datasets: [{
-        data,
-        backgroundColor: barColor,
-        borderRadius: 4,
-        borderSkipped: false,
-      }]
-    },
+    data: { labels, datasets: [{ data, backgroundColor: barColor, borderRadius: 4, borderSkipped: false }] },
     options: {
       responsive: true,
       plugins: {
-        legend: { display: false },
-        tooltip: { enabled: false },
-        datalabels: {
-          anchor: 'end',
-          align: 'end',
-          color: '#114d5d',
-          font: { family: "'Anek Bangla', Arial, sans-serif", weight: '700', size: 11 },
-          formatter: v => v.toLocaleString('en-ZA')
-        }
+        legend: { display: false }, tooltip: { enabled: false },
+        datalabels: { anchor: 'end', align: 'end', color: '#114d5d', font: { family: "'Anek Bangla', Arial, sans-serif", weight: '700', size: 11 }, formatter: v => v.toLocaleString('en-ZA') }
       },
       scales: {
         y: { display: false, grid: { display: false } },
-        x: {
-          grid: { display: false },
-          ticks: {
-            color: '#46717e',
-            font: { family: "'Anek Bangla', Arial, sans-serif", size: 11 }
-          }
-        }
+        x: { grid: { display: false }, ticks: { color: '#46717e', font: { family: "'Anek Bangla', Arial, sans-serif", size: 11 } } }
       },
       layout: { padding: { top: 24 } }
     }
@@ -529,11 +527,10 @@ function buildMonthChart(wrapId, field, barColor) {
 function refresh() {
   let pvT = 0, bessT = 0, pvN = 0, bessN = 0;
   projects.forEach(p => {
-    if (p.pv > 0)   { pvT += p.pv;     pvN++; }
-    if (p.bess > 0) { bessT += p.bess;  bessN++; }
+    if (p.pv > 0)   { pvT += p.pv;   pvN++; }
+    if (p.bess > 0) { bessT += p.bess; bessN++; }
   });
-
-  const pvP  = Math.min((pvT / PV_TGT) * 100, 100);
+  const pvP = Math.min((pvT / PV_TGT) * 100, 100);
   const bessP = Math.min((bessT / BESS_TGT) * 100, 100);
 
   [pvChart, bessChart].forEach((c, i) => {
@@ -544,82 +541,51 @@ function refresh() {
     c.update();
   });
 
-  set('pvVal', pvT.toFixed(0));
-  set('pvPct', Math.round(pvP) + '%', pClass(pvP));
-  set('pvRem', Math.max(PV_TGT - pvT, 0).toFixed(0));
-  set('pvCount', pvN);
+  set('pvVal', pvT.toFixed(0)); set('pvPct', Math.round(pvP) + '%', pClass(pvP));
+  set('pvRem', Math.max(PV_TGT - pvT, 0).toFixed(0)); set('pvCount', pvN);
   bar('pvBar', pvP, gColor(pvP));
 
-  set('bessVal', bessT.toFixed(0));
-  set('bessPct', Math.round(bessP) + '%', pClass(bessP));
-  set('bessRem', Math.max(BESS_TGT - bessT, 0).toFixed(0));
-  set('bessCount', bessN);
+  set('bessVal', bessT.toFixed(0)); set('bessPct', Math.round(bessP) + '%', pClass(bessP));
+  set('bessRem', Math.max(BESS_TGT - bessT, 0).toFixed(0)); set('bessCount', bessN);
   bar('bessBar', bessP, gColor(bessP));
 
-  const banner = document.getElementById('completeBanner');
-  banner.classList.toggle('show', pvT >= PV_TGT && bessT >= BESS_TGT);
+  document.getElementById('completeBanner').classList.toggle('show', pvT >= PV_TGT && bessT >= BESS_TGT);
 
   if (pvMonthChart)   { pvMonthChart.destroy();   pvMonthChart = null; }
   if (bessMonthChart) { bessMonthChart.destroy(); bessMonthChart = null; }
   pvMonthChart   = buildMonthChart('pvMonthWrap',   'pv',   '#26f0a3');
   bessMonthChart = buildMonthChart('bessMonthWrap', 'bess', '#16e7cf');
-
   renderTable();
 }
 
-function set(id, val, cls) {
-  const el = document.getElementById(id);
-  el.textContent = val;
-  if (cls) el.className = cls;
-}
-
-function bar(id, pct, color) {
-  const el = document.getElementById(id);
-  el.style.width = pct + '%';
-  el.style.background = color;
-}
+function set(id, val, cls) { const el = document.getElementById(id); el.textContent = val; if (cls) el.className = cls; }
+function bar(id, pct, color) { const el = document.getElementById(id); el.style.width = pct + '%'; el.style.background = color; }
 
 function renderTable() {
   const wrap = document.getElementById('tableWrap');
-  if (!projects.length) {
-    wrap.innerHTML = '<div class="empty">No deals added yet.</div>';
-    return;
-  }
-
-  // Sort chronologically oldest first
-  const sorted = projects
-    .map((p, i) => ({ ...p, idx: i }))
-    .sort((a, b) => sortKey(a) < sortKey(b) ? -1 : 1);
-
+  if (!projects.length) { wrap.innerHTML = '<div class="empty">No deals added yet.</div>'; return; }
+  const sorted = [...projects].sort((a, b) => sortKey(a) < sortKey(b) ? -1 : 1);
   const rows = sorted.map(p => {
     const tc = p.type === 'pv' ? 'pv' : p.type === 'bess' ? 'bess' : 'pv-bess';
     const tl = p.type === 'pv' ? 'PV' : p.type === 'bess' ? 'BESS' : 'PV + BESS';
-    const sz = p.type === 'pv'
-      ? p.pv.toLocaleString('en-ZA') + ' kWp'
-      : p.type === 'bess'
-      ? p.bess.toLocaleString('en-ZA') + ' kWh'
+    const sz = p.type === 'pv' ? p.pv.toLocaleString('en-ZA') + ' kWp'
+      : p.type === 'bess' ? p.bess.toLocaleString('en-ZA') + ' kWh'
       : p.pv.toLocaleString('en-ZA') + ' kWp / ' + p.bess.toLocaleString('en-ZA') + ' kWh';
     return `<tr>
       <td>${p.name}</td>
       <td><span class="badge ${tc}">${tl}</span></td>
       <td>${sz}</td>
-      <td>${p.month || p.date || ''}</td>
+      <td>${p.month || ''}</td>
       <td>
-        <button class="edit-btn" onclick="startEdit(${p.idx})" title="Edit">&#9998;</button>
-        <button class="del-btn"  onclick="del(${p.idx})"       title="Remove">&#10005;</button>
+        <button class="edit-btn" onclick="startEdit(${p.id})" title="Edit">&#9998;</button>
+        <button class="del-btn"  onclick="del(${p.id})"       title="Remove">&#10005;</button>
       </td>
     </tr>`;
   }).join('');
-
-  wrap.innerHTML = `<table>
-    <thead><tr><th>Project</th><th>Type</th><th>Size</th><th>Month</th><th></th></tr></thead>
-    <tbody>${rows}</tbody>
-  </table>`;
+  wrap.innerHTML = `<table><thead><tr><th>Project</th><th>Type</th><th>Size</th><th>Month</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
-let editIdx = -1;
-
-function addProject() {
+async function addProject() {
   const name    = document.getElementById('pName').value.trim();
   const type    = document.getElementById('pType').value;
   const dateVal = document.getElementById('pDate').value;
@@ -634,37 +600,25 @@ function addProject() {
 
   const d = new Date(dateVal + '-01T00:00:00');
   const month = d.toLocaleDateString('en-ZA', { month: 'short', year: 'numeric' });
-  const entry = {
-    name, type,
-    pv:   type === 'bess' ? 0 : pv,
-    bess: type === 'pv'   ? 0 : bess,
-    monthKey: dateVal,
-    month
-  };
 
-  if (editIdx >= 0) {
-    projects[editIdx] = entry;
-    editIdx = -1;
-    document.getElementById('submitBtn').textContent = 'Add Project';
-    document.getElementById('cancelBtn').classList.remove('show');
-  } else {
-    projects.push(entry);
-  }
+  await apiSave({ name, type, pv: type === 'bess' ? 0 : pv, bess: type === 'pv' ? 0 : bess, month_key: dateVal, month });
 
-  save();
-  refresh();
-  document.getElementById('pName').value  = '';
-  document.getElementById('pDate').value  = '';
-  document.getElementById('pvSz').value   = '';
+  editId = null;
+  document.getElementById('submitBtn').textContent = 'Add Project';
+  document.getElementById('cancelBtn').classList.remove('show');
+  document.getElementById('pName').value = '';
+  document.getElementById('pDate').value = '';
+  document.getElementById('pvSz').value  = '';
   document.getElementById('bessSz').value = '';
 }
 
-function startEdit(i) {
-  const p = projects[i];
-  editIdx = i;
+function startEdit(id) {
+  const p = projects.find(x => x.id === id);
+  if (!p) return;
+  editId = id;
   document.getElementById('pName').value  = p.name;
   document.getElementById('pType').value  = p.type;
-  document.getElementById('pDate').value  = p.monthKey || '';
+  document.getElementById('pDate').value  = p.month_key || '';
   document.getElementById('pvSz').value   = p.pv   > 0 ? p.pv   : '';
   document.getElementById('bessSz').value = p.bess > 0 ? p.bess : '';
   document.getElementById('pvSizeGrp').style.display   = p.type === 'bess' ? 'none' : '';
@@ -676,23 +630,20 @@ function startEdit(i) {
 }
 
 function cancelEdit() {
-  editIdx = -1;
-  document.getElementById('pName').value  = '';
-  document.getElementById('pDate').value  = '';
-  document.getElementById('pvSz').value   = '';
+  editId = null;
+  document.getElementById('pName').value = '';
+  document.getElementById('pDate').value = '';
+  document.getElementById('pvSz').value  = '';
   document.getElementById('bessSz').value = '';
   document.getElementById('submitBtn').textContent = 'Add Project';
   document.getElementById('cancelBtn').classList.remove('show');
 }
 
-function del(i) {
-  if (!confirm('Remove "' + projects[i].name + '"?')) return;
-  projects.splice(i, 1);
-  save();
-  refresh();
+async function del(id) {
+  const p = projects.find(x => x.id === id);
+  if (!confirm('Remove "' + (p ? p.name : 'this project') + '"?')) return;
+  await apiDelete(id);
 }
-
-function save() { localStorage.setItem('fe_fy27', JSON.stringify(projects)); }
 
 document.getElementById('pType').addEventListener('change', function () {
   document.getElementById('pvSizeGrp').style.display   = this.value === 'bess' ? 'none' : '';
@@ -702,7 +653,7 @@ document.getElementById('pType').addEventListener('change', function () {
 window.addEventListener('load', () => {
   pvChart   = gauge(document.getElementById('pvGauge').getContext('2d'),   '#8ca6ae');
   bessChart = gauge(document.getElementById('bessGauge').getContext('2d'), '#8ca6ae');
-  refresh();
+  loadProjects();
 });
 </script>
 </body>
