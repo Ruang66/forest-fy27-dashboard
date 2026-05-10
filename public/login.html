@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Forest FY27 — Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Anek Bangla', Arial, sans-serif;
+      background: #0d2830;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 48px 40px 40px;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .logo-box {
+      width: 44px; height: 44px;
+      background: #114d5d;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 700; color: white;
+      flex-shrink: 0;
+    }
+    .logo-text h1 {
+      font-size: 15px; font-weight: 700;
+      color: #114d5d; line-height: 1.2;
+    }
+    .logo-text p {
+      font-size: 12px; color: #8ca6ae;
+    }
+    .divider {
+      height: 1px; background: #dde4e6;
+      margin-bottom: 28px;
+    }
+    h2 {
+      font-size: 20px; font-weight: 700;
+      color: #0d2830; margin-bottom: 6px;
+    }
+    .sub {
+      font-size: 13px; color: #8ca6ae;
+      margin-bottom: 28px;
+    }
+    label {
+      display: block; font-size: 12px;
+      font-weight: 600; color: #0d2830;
+      margin-bottom: 6px;
+    }
+    input {
+      width: 100%; padding: 10px 13px;
+      border: 1px solid #dde4e6; border-radius: 8px;
+      font-family: 'Anek Bangla', Arial, sans-serif;
+      font-size: 14px; color: #0d2830;
+      margin-bottom: 16px;
+      transition: border-color 0.15s;
+    }
+    input:focus {
+      outline: none;
+      border-color: #114d5d;
+      box-shadow: 0 0 0 3px rgba(17,77,93,0.1);
+    }
+    .error-msg {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #dc2626;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+    }
+    .error-msg.show { display: block; }
+    button {
+      width: 100%; padding: 12px;
+      background: #114d5d; color: white;
+      border: none; border-radius: 8px;
+      font-family: 'Anek Bangla', Arial, sans-serif;
+      font-size: 14px; font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s;
+      margin-top: 4px;
+    }
+    button:hover { background: #0d2830; }
+    .footer {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 11px;
+      color: #8ca6ae;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo-wrap">
+      <div class="logo-box">FE</div>
+      <div class="logo-text">
+        <h1>Forest Energy</h1>
+        <p>FY27 Target Dashboard</p>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <h2>Sign in</h2>
+    <p class="sub">Enter your credentials to access the dashboard.</p>
+
+    <div id="errorMsg" class="error-msg">Incorrect username or password.</div>
+
+    <form method="POST" action="/login">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" autocomplete="username" required />
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" autocomplete="current-password" required />
+
+      <button type="submit">Sign In</button>
+    </form>
+    <div class="footer">Forest Energy &copy; 2027 — Internal Use Only</div>
+  </div>
+
+  <script>
+    if (window.location.search.includes('error=1')) {
+      document.getElementById('errorMsg').classList.add('show');
+    }
+  </script>
+</body>
+</html>
