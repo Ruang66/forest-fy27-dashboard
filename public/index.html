@@ -306,7 +306,7 @@
 
   <div class="bonus-banner">
     <div class="dot"></div>
-    <span><strong>Bonus threshold:</strong> Both targets must be reached before any bonuses are paid. PV = 6 000 kWp and BESS = 8 000 kWh.</span>
+    <span><strong>Bonus threshold:</strong> Both targets must be reached before any bonuses are paid. PV = 6 000 kWp and BESS = 7 000 kWh.</span>
   </div>
 
   <div id="completeBanner" class="complete-banner">
@@ -350,7 +350,7 @@
         <div class="gauge-center">
           <div class="gauge-num" id="bessVal">0.00</div>
           <div class="gauge-unit">kWh closed</div>
-          <div class="gauge-tgt">Target: 8 000 kWh</div>
+          <div class="gauge-tgt">Target: 7 000 kWh</div>
         </div>
       </div>
       <div class="pbar-wrap"><div class="pbar-fill" id="bessBar" style="width:0%"></div></div>
@@ -360,7 +360,7 @@
           <div class="stat-lbl">Complete</div>
         </div>
         <div class="stat">
-          <div class="stat-val" id="bessRem">8 000</div>
+          <div class="stat-val" id="bessRem">7 000</div>
           <div class="stat-lbl">kWh remaining</div>
         </div>
         <div class="stat">
@@ -432,7 +432,7 @@
 
 <script>
 Chart.register(ChartDataLabels);
-const PV_TGT = 6000, BESS_TGT = 8000;
+const PV_TGT = 6000, BESS_TGT = 7000;
 let projects = [];
 let pvChart, bessChart, pvMonthChart, bessMonthChart;
 let editId = null;
