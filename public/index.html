@@ -16,266 +16,164 @@
       --dark:       #0d2830;
       --green-acc:  #26f0a3;
       --teal-acc:   #16e7cf;
+      --pipe-col:   #86efcc;
       --white:      #ffffff;
       --text:       #0d2830;
       --text-muted: #46717e;
       --border:     #dde4e6;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Anek Bangla', Arial, sans-serif;
-      background: #f0f4f5;
-      color: var(--text);
-      min-height: 100vh;
-    }
+    body { font-family: 'Anek Bangla', Arial, sans-serif; background: #f0f4f5; color: var(--text); min-height: 100vh; }
 
-    /* HEADER */
     header {
-      background: var(--dark);
-      padding: 0 36px;
-      height: 68px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      background: var(--dark); padding: 0 36px; height: 68px;
+      display: flex; align-items: center; justify-content: space-between;
       border-bottom: 3px solid var(--green-acc);
     }
     .header-left { display: flex; align-items: center; gap: 14px; }
-    .logo-box {
-      width: 42px; height: 42px; border-radius: 8px; overflow: hidden;
-      flex-shrink: 0;
-    }
+    .logo-box { width: 42px; height: 42px; border-radius: 8px; overflow: hidden; flex-shrink: 0; }
     .logo-box img { width: 100%; height: 100%; object-fit: cover; }
-    .header-text h1 {
-      font-size: 17px; font-weight: 700; color: var(--white);
-      letter-spacing: 0.4px; line-height: 1.2;
-    }
-    .header-text p {
-      font-size: 12px; color: var(--blue-grey); font-weight: 400;
-    }
+    .header-text h1 { font-size: 17px; font-weight: 700; color: var(--white); letter-spacing: 0.4px; line-height: 1.2; }
+    .header-text p  { font-size: 12px; color: var(--blue-grey); font-weight: 400; }
     .fy-tag {
-      background: rgba(38,240,163,0.12);
-      border: 1px solid rgba(38,240,163,0.35);
-      color: var(--green-acc);
-      border-radius: 20px;
-      padding: 5px 16px;
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.5px;
+      background: rgba(38,240,163,0.12); border: 1px solid rgba(38,240,163,0.35);
+      color: var(--green-acc); border-radius: 20px; padding: 5px 16px;
+      font-size: 12px; font-weight: 600; letter-spacing: 0.5px;
     }
 
-    /* LAYOUT */
     .main { max-width: 1080px; margin: 0 auto; padding: 28px 20px; }
 
-    /* BONUS BANNER */
     .bonus-banner {
-      background: var(--blue);
-      border-radius: 10px;
-      padding: 14px 22px;
-      margin-bottom: 24px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      color: var(--white);
-      font-size: 13.5px;
+      background: var(--blue); border-radius: 10px; padding: 14px 22px;
+      margin-bottom: 20px; display: flex; align-items: center; gap: 12px;
+      color: var(--white); font-size: 13.5px;
     }
-    .bonus-banner .dot {
-      width: 8px; height: 8px; border-radius: 50%;
-      background: var(--green-acc); flex-shrink: 0;
-    }
+    .bonus-banner .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green-acc); flex-shrink: 0; }
 
-    /* COMPLETION BANNER */
+    /* VIEW TABS */
+    .view-tabs { display: flex; align-items: center; gap: 6px; margin-bottom: 20px; }
+    .view-tab {
+      padding: 9px 22px; border-radius: 8px; font-size: 13px; font-weight: 700;
+      cursor: pointer; border: 1px solid var(--border); background: white;
+      color: var(--blue-grey); transition: all 0.15s;
+      font-family: 'Anek Bangla', Arial, sans-serif; letter-spacing: 0.2px;
+    }
+    .view-tab:hover { border-color: var(--blue); color: var(--blue); }
+    .view-tab.active { background: var(--blue); color: white; border-color: var(--blue); }
+    .view-sub { font-size: 11px; color: var(--blue-grey); margin-left: 6px; }
+
+    /* BANNERS */
     .complete-banner {
-      display: none;
-      background: linear-gradient(120deg, var(--dark), var(--blue));
-      border: 1px solid var(--green-acc);
-      border-radius: 10px;
-      padding: 16px 22px;
-      margin-bottom: 24px;
-      text-align: center;
-      color: var(--green-acc);
-      font-size: 15px;
-      font-weight: 700;
-      letter-spacing: 0.3px;
+      display: none; background: linear-gradient(120deg, var(--dark), var(--blue));
+      border: 1px solid var(--green-acc); border-radius: 10px; padding: 16px 22px;
+      margin-bottom: 24px; text-align: center; color: var(--green-acc);
+      font-size: 15px; font-weight: 700; letter-spacing: 0.3px;
     }
     .complete-banner.show { display: block; }
 
-    /* GAUGE CARDS */
-    .gauges-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-      margin-bottom: 20px;
+    .pipeline-banner {
+      display: none; background: #0d3328; border: 1px solid var(--pipe-col);
+      border-radius: 10px; padding: 13px 22px; margin-bottom: 24px;
+      align-items: center; gap: 12px; color: var(--pipe-col); font-size: 13px;
     }
+    .pipeline-banner.show { display: flex; }
+    .pipeline-banner .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--pipe-col); flex-shrink: 0; }
+
+    /* GAUGES */
+    .gauges-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
     .card {
-      background: var(--white);
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      padding: 24px 22px 18px;
-      box-shadow: 0 1px 6px rgba(17,77,93,0.07);
+      background: var(--white); border-radius: 12px; border: 1px solid var(--border);
+      padding: 24px 22px 18px; box-shadow: 0 1px 6px rgba(17,77,93,0.07);
     }
-    .card-label {
-      font-size: 11px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 1px;
-      color: var(--blue-grey); margin-bottom: 2px;
-    }
-    .card-title {
-      font-size: 16px; font-weight: 700;
-      color: var(--blue); margin-bottom: 14px;
-    }
-    .gauge-wrap {
-      position: relative;
-      max-width: 260px;
-      margin: 0 auto;
-    }
+    .card-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--blue-grey); margin-bottom: 2px; }
+    .card-title { font-size: 16px; font-weight: 700; color: var(--blue); margin-bottom: 14px; }
+
+    .gauge-wrap { position: relative; max-width: 260px; margin: 0 auto; }
     .gauge-center {
-      position: absolute;
-      bottom: 8px; left: 50%;
-      transform: translateX(-50%);
-      text-align: center;
-      pointer-events: none;
+      position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
+      text-align: center; pointer-events: none;
     }
-    .gauge-num {
-      font-size: 30px; font-weight: 700;
-      color: var(--dark); line-height: 1;
-    }
+    .gauge-num { font-size: 30px; font-weight: 700; color: var(--dark); line-height: 1; }
     .gauge-unit { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
     .gauge-tgt  { font-size: 11px; color: var(--blue-grey); margin-top: 3px; }
+    .gauge-breakdown {
+      display: none; font-size: 10px; color: var(--blue-grey);
+      margin-top: 5px; white-space: nowrap;
+    }
+    .gauge-breakdown.show { display: block; }
+    .dot-closed { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--blue); margin-right: 2px; vertical-align: middle; }
+    .dot-pipe   { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--pipe-col); margin-right: 2px; margin-left: 8px; vertical-align: middle; }
 
-    .pbar-wrap {
-      background: var(--grey);
-      border-radius: 999px; height: 5px;
-      margin-top: 10px; overflow: hidden;
-    }
-    .pbar-fill {
-      height: 100%; border-radius: 999px;
-      background: var(--blue);
-      transition: width 0.5s ease;
-    }
+    .gauge-legend { display: none; justify-content: center; gap: 16px; margin-top: 8px; font-size: 11px; color: var(--text-muted); }
+    .gauge-legend.show { display: flex; }
+    .gauge-legend span { display: flex; align-items: center; gap: 5px; }
+    .ldot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
 
-    .stat-row {
-      display: flex; justify-content: space-between;
-      margin-top: 14px; padding-top: 14px;
-      border-top: 1px solid var(--border);
-    }
+    .pbar-wrap { background: var(--grey); border-radius: 999px; height: 5px; margin-top: 10px; overflow: hidden; }
+    .pbar-fill { height: 100%; border-radius: 999px; background: var(--blue); transition: width 0.5s ease; }
+
+    .stat-row { display: flex; justify-content: space-between; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
     .stat { text-align: center; }
-    .stat-val {
-      font-size: 17px; font-weight: 700;
-      color: var(--blue);
-    }
-    .stat-val.warn  { color: #d97706; }
-    .stat-val.low   { color: #dc2626; }
+    .stat-val { font-size: 17px; font-weight: 700; color: var(--blue); }
+    .stat-val.warn { color: #d97706; }
+    .stat-val.low  { color: #dc2626; }
     .stat-lbl { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
 
-    /* BOTTOM GRID */
-    .bottom-row {
-      display: grid;
-      grid-template-columns: 1fr 1.5fr;
-      gap: 20px;
-    }
-    .form-title {
-      font-size: 14px; font-weight: 700;
-      color: var(--blue); margin-bottom: 18px;
-    }
+    /* MONTHLY */
+    .monthly-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+    .monthly-row .card-title { margin-bottom: 16px; }
+    .no-data-msg { text-align: center; padding: 28px 0; color: var(--blue-grey); font-size: 13px; }
+
+    /* BOTTOM */
+    .bottom-row { display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px; }
+    .form-title { font-size: 14px; font-weight: 700; color: var(--blue); margin-bottom: 18px; }
     .fg { margin-bottom: 14px; }
-    label {
-      display: block; font-size: 12px; font-weight: 600;
-      color: var(--text); margin-bottom: 5px;
-    }
+    label { display: block; font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 5px; }
     input, select {
-      width: 100%; padding: 9px 11px;
-      border: 1px solid var(--border); border-radius: 7px;
-      font-family: 'Anek Bangla', Arial, sans-serif;
-      font-size: 13px; color: var(--text); background: white;
+      width: 100%; padding: 9px 11px; border: 1px solid var(--border); border-radius: 7px;
+      font-family: 'Anek Bangla', Arial, sans-serif; font-size: 13px; color: var(--text); background: white;
     }
-    input:focus, select:focus {
-      outline: none;
-      border-color: var(--blue);
-      box-shadow: 0 0 0 3px rgba(17,77,93,0.1);
-    }
+    input:focus, select:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(17,77,93,0.1); }
+
+    .btn-row { display: flex; gap: 8px; }
     .btn {
-      width: 100%; padding: 11px;
-      background: var(--blue); color: white;
-      border: none; border-radius: 8px;
-      font-family: 'Anek Bangla', Arial, sans-serif;
-      font-size: 14px; font-weight: 700;
-      cursor: pointer; transition: background 0.15s;
-      letter-spacing: 0.3px;
+      flex: 2; padding: 11px; background: var(--blue); color: white; border: none; border-radius: 8px;
+      font-family: 'Anek Bangla', Arial, sans-serif; font-size: 14px; font-weight: 700;
+      cursor: pointer; transition: background 0.15s; letter-spacing: 0.3px;
     }
     .btn:hover { background: var(--dark); }
+    .btn-cancel {
+      flex: 1; padding: 11px; background: white; color: var(--blue);
+      border: 1px solid var(--border); border-radius: 8px;
+      font-family: 'Anek Bangla', Arial, sans-serif; font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: background 0.15s; display: none;
+    }
+    .btn-cancel.show { display: block; }
 
     /* TABLE */
-    .tbl-title {
-      font-size: 14px; font-weight: 700;
-      color: var(--blue); margin-bottom: 14px;
-    }
+    .tbl-title { font-size: 14px; font-weight: 700; color: var(--blue); margin-bottom: 14px; }
     .tbl-scroll { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
     thead th {
-      text-align: left; padding: 8px 10px;
-      background: #edf3f5;
-      color: var(--blue); font-weight: 700;
-      font-size: 11px; text-transform: uppercase;
-      letter-spacing: 0.5px;
-      border-bottom: 2px solid var(--border);
+      text-align: left; padding: 8px 10px; background: #edf3f5;
+      color: var(--blue); font-weight: 700; font-size: 11px;
+      text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid var(--border);
     }
-    tbody td {
-      padding: 10px 10px;
-      border-bottom: 1px solid var(--border);
-      vertical-align: middle;
-    }
+    tbody td { padding: 10px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
     tbody tr:last-child td { border-bottom: none; }
     tbody tr:hover td { background: #f5f9fa; }
 
-    .badge {
-      display: inline-block; padding: 2px 9px;
-      border-radius: 10px; font-size: 11px; font-weight: 700;
-    }
+    .badge { display: inline-block; padding: 2px 9px; border-radius: 10px; font-size: 11px; font-weight: 700; }
     .badge.pv      { background: #dcfce7; color: #166534; }
     .badge.bess    { background: #dbeafe; color: #1e3a8a; }
     .badge.pv-bess { background: #f3e8ff; color: #6b21a8; }
+    .badge.st-closed   { background: #dcfce7; color: #166534; }
+    .badge.st-pipeline { background: #fef3c7; color: #92400e; }
 
-    .del-btn, .edit-btn {
-      background: none; border: none; cursor: pointer;
-      font-size: 14px; padding: 2px 5px; border-radius: 4px;
-    }
-    .del-btn  { color: #cbd5e1; }
-    .del-btn:hover  { color: #dc2626; }
-    .edit-btn { color: #8ca6ae; }
-    .edit-btn:hover { color: #114d5d; }
-
-    .btn-row { display: flex; gap: 8px; }
-    .btn-cancel {
-      flex: 1; padding: 11px;
-      background: white; color: var(--blue);
-      border: 1px solid var(--border); border-radius: 8px;
-      font-family: 'Anek Bangla', Arial, sans-serif;
-      font-size: 14px; font-weight: 600;
-      cursor: pointer; transition: background 0.15s;
-      display: none;
-    }
-    .btn-cancel.show { display: block; }
-    .btn { flex: 2; }
-
-    .empty {
-      text-align: center; padding: 30px;
-      color: var(--blue-grey); font-size: 13px;
-    }
-
-    .monthly-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-      margin-bottom: 20px;
-    }
-    .monthly-row .card-title {
-      margin-bottom: 16px;
-    }
-    .no-data-msg {
-      text-align: center;
-      padding: 28px 0;
-      color: var(--blue-grey);
-      font-size: 13px;
-    }
+    .del-btn, .edit-btn { background: none; border: none; cursor: pointer; font-size: 14px; padding: 2px 5px; border-radius: 4px; }
+    .del-btn  { color: #cbd5e1; } .del-btn:hover  { color: #dc2626; }
+    .edit-btn { color: #8ca6ae; } .edit-btn:hover { color: #114d5d; }
+    .empty { text-align: center; padding: 30px; color: var(--blue-grey); font-size: 13px; }
 
     @media (max-width: 680px) {
       .gauges-row, .bottom-row, .monthly-row { grid-template-columns: 1fr; }
@@ -287,9 +185,7 @@
 
 <header>
   <div class="header-left">
-    <div class="logo-box">
-      <img src="/logo.png" alt="Forest Energy" />
-    </div>
+    <div class="logo-box"><img src="/logo.png" alt="Forest Energy" /></div>
     <div class="header-text">
       <h1>Forest FY27 Target Dashboard</h1>
       <p>Company-wide bonus threshold tracker</p>
@@ -309,8 +205,17 @@
     <span><strong>Bonus threshold:</strong> Both targets must be reached before any bonuses are paid. PV = 6 000 kWp and BESS = 7 000 kWh.</span>
   </div>
 
-  <div id="completeBanner" class="complete-banner">
-    Both targets achieved. Bonus threshold unlocked.
+  <div class="view-tabs">
+    <button class="view-tab active" id="tabClosed"   onclick="switchView('closed')">Closed Deals</button>
+    <button class="view-tab"        id="tabPipeline" onclick="switchView('pipeline')">Pipeline View</button>
+    <span class="view-sub" id="viewSub">Signed and completed contracts only</span>
+  </div>
+
+  <div id="completeBanner" class="complete-banner">Both targets achieved. Bonus threshold unlocked.</div>
+
+  <div id="pipelineBanner" class="pipeline-banner">
+    <div class="dot"></div>
+    <span>Combined view: closed deals + pipeline deals. Only closed amounts count toward the bonus threshold.</span>
   </div>
 
   <div class="gauges-row">
@@ -320,25 +225,24 @@
       <div class="gauge-wrap">
         <canvas id="pvGauge" height="150"></canvas>
         <div class="gauge-center">
-          <div class="gauge-num" id="pvVal">0.00</div>
-          <div class="gauge-unit">kWp closed</div>
+          <div class="gauge-num" id="pvVal">0</div>
+          <div class="gauge-unit" id="pvUnit">kWp closed</div>
           <div class="gauge-tgt">Target: 6 000 kWp</div>
+          <div class="gauge-breakdown" id="pvBreakdown">
+            <span class="dot-closed"></span><span id="pvClosedLbl">0</span> closed
+            <span class="dot-pipe"></span><span id="pvPipeLbl">0</span> pipeline
+          </div>
         </div>
+      </div>
+      <div class="gauge-legend" id="pvLegend">
+        <span><span class="ldot" style="background:#114d5d"></span>Closed</span>
+        <span><span class="ldot" style="background:#86efcc"></span>Pipeline</span>
       </div>
       <div class="pbar-wrap"><div class="pbar-fill" id="pvBar" style="width:0%"></div></div>
       <div class="stat-row">
-        <div class="stat">
-          <div class="stat-val low" id="pvPct">0%</div>
-          <div class="stat-lbl">Complete</div>
-        </div>
-        <div class="stat">
-          <div class="stat-val" id="pvRem">6 000</div>
-          <div class="stat-lbl">kWp remaining</div>
-        </div>
-        <div class="stat">
-          <div class="stat-val" id="pvCount">0</div>
-          <div class="stat-lbl">Projects</div>
-        </div>
+        <div class="stat"><div class="stat-val low" id="pvPct">0%</div><div class="stat-lbl">Complete</div></div>
+        <div class="stat"><div class="stat-val" id="pvRem">6 000</div><div class="stat-lbl" id="pvRemLbl">kWp remaining</div></div>
+        <div class="stat"><div class="stat-val" id="pvCount">0</div><div class="stat-lbl">Projects</div></div>
       </div>
     </div>
 
@@ -348,25 +252,24 @@
       <div class="gauge-wrap">
         <canvas id="bessGauge" height="150"></canvas>
         <div class="gauge-center">
-          <div class="gauge-num" id="bessVal">0.00</div>
-          <div class="gauge-unit">kWh closed</div>
+          <div class="gauge-num" id="bessVal">0</div>
+          <div class="gauge-unit" id="bessUnit">kWh closed</div>
           <div class="gauge-tgt">Target: 7 000 kWh</div>
+          <div class="gauge-breakdown" id="bessBreakdown">
+            <span class="dot-closed"></span><span id="bessClosedLbl">0</span> closed
+            <span class="dot-pipe"></span><span id="bessPipeLbl">0</span> pipeline
+          </div>
         </div>
+      </div>
+      <div class="gauge-legend" id="bessLegend">
+        <span><span class="ldot" style="background:#114d5d"></span>Closed</span>
+        <span><span class="ldot" style="background:#86efcc"></span>Pipeline</span>
       </div>
       <div class="pbar-wrap"><div class="pbar-fill" id="bessBar" style="width:0%"></div></div>
       <div class="stat-row">
-        <div class="stat">
-          <div class="stat-val low" id="bessPct">0%</div>
-          <div class="stat-lbl">Complete</div>
-        </div>
-        <div class="stat">
-          <div class="stat-val" id="bessRem">7 000</div>
-          <div class="stat-lbl">kWh remaining</div>
-        </div>
-        <div class="stat">
-          <div class="stat-val" id="bessCount">0</div>
-          <div class="stat-lbl">Projects</div>
-        </div>
+        <div class="stat"><div class="stat-val low" id="bessPct">0%</div><div class="stat-lbl">Complete</div></div>
+        <div class="stat"><div class="stat-val" id="bessRem">7 000</div><div class="stat-lbl" id="bessRemLbl">kWh remaining</div></div>
+        <div class="stat"><div class="stat-val" id="bessCount">0</div><div class="stat-lbl">Projects</div></div>
       </div>
     </div>
   </div>
@@ -386,11 +289,17 @@
 
   <div class="bottom-row">
     <div class="card">
-      <div class="form-title">Add Closed Deal</div>
-
+      <div class="form-title" id="formTitle">Add Deal</div>
       <div class="fg">
         <label for="pName">Project Name</label>
         <input type="text" id="pName" placeholder="e.g. Stellenbosch Industrial Park" />
+      </div>
+      <div class="fg">
+        <label for="pStatus">Status</label>
+        <select id="pStatus">
+          <option value="closed">Closed</option>
+          <option value="pipeline">Pipeline</option>
+        </select>
       </div>
       <div class="fg">
         <label for="pType">Type</label>
@@ -401,10 +310,9 @@
         </select>
       </div>
       <div class="fg">
-        <label for="pDate">Month Closed</label>
+        <label for="pDate" id="pDateLabel">Month Closed</label>
         <input type="month" id="pDate" min="2026-03" max="2027-02" />
       </div>
-
       <div class="fg" id="pvSizeGrp">
         <label for="pvSz">PV Size (kWp)</label>
         <input type="number" id="pvSz" placeholder="e.g. 500" step="1" min="0" />
@@ -413,15 +321,14 @@
         <label for="bessSz">BESS Size (kWh)</label>
         <input type="number" id="bessSz" placeholder="e.g. 1000" step="1" min="0" />
       </div>
-
       <div class="btn-row">
         <button class="btn-cancel" id="cancelBtn" onclick="cancelEdit()">Cancel</button>
-        <button class="btn" id="submitBtn" onclick="addProject()">Add Project</button>
+        <button class="btn" id="submitBtn" onclick="addProject()">Add Deal</button>
       </div>
     </div>
 
     <div class="card">
-      <div class="tbl-title">Closed Deals</div>
+      <div class="tbl-title" id="tableTitle">Closed Deals</div>
       <div class="tbl-scroll" id="tableWrap">
         <div class="empty">No deals added yet.</div>
       </div>
@@ -436,8 +343,8 @@ const PV_TGT = 6000, BESS_TGT = 7000;
 let projects = [];
 let pvChart, bessChart, pvMonthChart, bessMonthChart;
 let editId = null;
+let activeView = 'closed';
 
-// --- API ---
 async function loadProjects() {
   const res = await fetch('/api/projects');
   projects = await res.json();
@@ -457,11 +364,20 @@ async function apiDelete(id) {
   await loadProjects();
 }
 
-// --- Charts ---
-function gauge(ctx, color) {
+function switchView(view) {
+  activeView = view;
+  document.getElementById('tabClosed').classList.toggle('active', view === 'closed');
+  document.getElementById('tabPipeline').classList.toggle('active', view === 'pipeline');
+  document.getElementById('viewSub').textContent = view === 'closed'
+    ? 'Signed and completed contracts only'
+    : 'Closed deals + pipeline combined';
+  refresh();
+}
+
+function gauge(ctx) {
   return new Chart(ctx, {
     type: 'doughnut',
-    data: { datasets: [{ data: [0, 100], backgroundColor: [color, '#dde4e6'], borderWidth: 0, circumference: 180, rotation: 270 }] },
+    data: { datasets: [{ data: [0, 0, 100], backgroundColor: ['#8ca6ae', '#86efcc', '#dde4e6'], borderWidth: 0, circumference: 180, rotation: 270 }] },
     options: { responsive: true, cutout: '74%', plugins: { legend: { display: false }, tooltip: { enabled: false }, datalabels: { display: false } }, animation: { duration: 500 } }
   });
 }
@@ -488,93 +404,157 @@ function sortKey(p) {
   return '';
 }
 
-function getMonthData(field) {
-  const map = {};
+function getMonthDataByStatus(field) {
+  const cm = {}, pm = {};
   projects.forEach(p => {
     if (p[field] > 0) {
       const key = sortKey(p);
-      if (!map[key]) map[key] = { label: p.month || key, total: 0 };
+      const label = p.month || key;
+      const isClosed = !p.status || p.status === 'closed';
+      const map = isClosed ? cm : pm;
+      if (!map[key]) map[key] = { label, total: 0 };
       map[key].total += p[field];
     }
   });
-  const sorted = Object.entries(map).sort((a, b) => a[0] < b[0] ? -1 : 1);
-  return { labels: sorted.map(e => e[1].label), data: sorted.map(e => e[1].total) };
+  const allKeys = [...new Set([...Object.keys(cm), ...Object.keys(pm)])].sort();
+  return {
+    labels:       allKeys.map(k => (cm[k] || pm[k]).label),
+    closedData:   allKeys.map(k => cm[k] ? cm[k].total : 0),
+    pipelineData: allKeys.map(k => pm[k] ? pm[k].total : 0)
+  };
 }
 
-function buildMonthChart(wrapId, field, barColor) {
+function buildMonthChart(wrapId, field, closedColor, pipeColor) {
   const wrap = document.getElementById(wrapId);
-  const { labels, data } = getMonthData(field);
-  if (!labels.length) { wrap.innerHTML = '<div class="no-data-msg">No data yet.</div>'; return null; }
+  const { labels, closedData, pipelineData } = getMonthDataByStatus(field);
+  const inP = activeView === 'pipeline';
+  const hasData = inP
+    ? (closedData.some(v => v > 0) || pipelineData.some(v => v > 0))
+    : closedData.some(v => v > 0);
+  if (!hasData) { wrap.innerHTML = '<div class="no-data-msg">No data yet.</div>'; return null; }
   wrap.innerHTML = '<canvas></canvas>';
   const ctx = wrap.querySelector('canvas').getContext('2d');
+  const datasets = inP ? [
+    { label: 'Closed',   data: closedData,   backgroundColor: closedColor, borderRadius: 4, borderSkipped: false, barPercentage: 0.6 },
+    { label: 'Pipeline', data: pipelineData, backgroundColor: pipeColor,   borderRadius: 4, borderSkipped: false, barPercentage: 0.6 }
+  ] : [
+    { data: closedData, backgroundColor: closedColor, borderRadius: 4, borderSkipped: false }
+  ];
   return new Chart(ctx, {
     type: 'bar',
-    data: { labels, datasets: [{ data, backgroundColor: barColor, borderRadius: 4, borderSkipped: false }] },
+    data: { labels, datasets },
     options: {
       responsive: true,
       plugins: {
-        legend: { display: false }, tooltip: { enabled: false },
-        datalabels: { anchor: 'end', align: 'end', color: '#114d5d', font: { family: "'Anek Bangla', Arial, sans-serif", weight: '700', size: 11 }, formatter: v => v.toLocaleString('en-ZA') }
+        legend: { display: inP, position: 'top', labels: { color: '#114d5d', font: { family: "'Anek Bangla', Arial, sans-serif", size: 11 }, boxWidth: 10, boxHeight: 10 } },
+        tooltip: { enabled: false },
+        datalabels: {
+          anchor: 'end', align: 'end', color: '#114d5d',
+          font: { family: "'Anek Bangla', Arial, sans-serif", weight: '700', size: 10 },
+          formatter: v => v > 0 ? v.toLocaleString('en-ZA') : ''
+        }
       },
       scales: {
         y: { display: false, grid: { display: false } },
         x: { grid: { display: false }, ticks: { color: '#46717e', font: { family: "'Anek Bangla', Arial, sans-serif", size: 11 } } }
       },
-      layout: { padding: { top: 24 } }
+      layout: { padding: { top: 28 } }
     }
   });
 }
 
 function refresh() {
-  let pvT = 0, bessT = 0, pvN = 0, bessN = 0;
-  projects.forEach(p => {
-    if (p.pv > 0)   { pvT += p.pv;   pvN++; }
-    if (p.bess > 0) { bessT += p.bess; bessN++; }
-  });
-  const pvP = Math.min((pvT / PV_TGT) * 100, 100);
-  const bessP = Math.min((bessT / BESS_TGT) * 100, 100);
+  const closed   = projects.filter(p => !p.status || p.status === 'closed');
+  const pipeline = projects.filter(p => p.status === 'pipeline');
+  const inP = activeView === 'pipeline';
 
-  [pvChart, bessChart].forEach((c, i) => {
-    const p = i === 0 ? pvP : bessP;
-    const col = gColor(p);
-    c.data.datasets[0].data = [p, 100 - p];
-    c.data.datasets[0].backgroundColor[0] = col;
-    c.update();
-  });
+  const cPvT  = closed.reduce((s, p)   => s + p.pv,   0);
+  const cBessT= closed.reduce((s, p)   => s + p.bess, 0);
+  const pPvT  = pipeline.reduce((s, p) => s + p.pv,   0);
+  const pBessT= pipeline.reduce((s, p) => s + p.bess, 0);
 
-  set('pvVal', pvT.toFixed(0)); set('pvPct', Math.round(pvP) + '%', pClass(pvP));
-  set('pvRem', Math.max(PV_TGT - pvT, 0).toFixed(0)); set('pvCount', pvN);
-  bar('pvBar', pvP, gColor(pvP));
+  const dispPvT   = inP ? cPvT   + pPvT   : cPvT;
+  const dispBessT = inP ? cBessT + pBessT : cBessT;
 
-  set('bessVal', bessT.toFixed(0)); set('bessPct', Math.round(bessP) + '%', pClass(bessP));
-  set('bessRem', Math.max(BESS_TGT - bessT, 0).toFixed(0)); set('bessCount', bessN);
-  bar('bessBar', bessP, gColor(bessP));
+  const cPvP   = Math.min((cPvT   / PV_TGT)   * 100, 100);
+  const cBessP = Math.min((cBessT / BESS_TGT)  * 100, 100);
+  const pPvP   = inP ? Math.min((pPvT   / PV_TGT)   * 100, Math.max(0, 100 - cPvP))   : 0;
+  const pBessP = inP ? Math.min((pBessT / BESS_TGT)  * 100, Math.max(0, 100 - cBessP)) : 0;
 
-  document.getElementById('completeBanner').classList.toggle('show', pvT >= PV_TGT && bessT >= BESS_TGT);
+  pvChart.data.datasets[0].data = [cPvP, pPvP, Math.max(0, 100 - cPvP - pPvP)];
+  pvChart.data.datasets[0].backgroundColor = [gColor(cPvP), '#86efcc', '#dde4e6'];
+  pvChart.update();
+
+  bessChart.data.datasets[0].data = [cBessP, pBessP, Math.max(0, 100 - cBessP - pBessP)];
+  bessChart.data.datasets[0].backgroundColor = [gColor(cBessP), '#86efcc', '#dde4e6'];
+  bessChart.update();
+
+  const pvPct   = Math.min((dispPvT   / PV_TGT)   * 100, 100);
+  const bessPct = Math.min((dispBessT / BESS_TGT)  * 100, 100);
+
+  set('pvVal',   dispPvT.toLocaleString('en-ZA'));
+  set('bessVal', dispBessT.toLocaleString('en-ZA'));
+  set('pvUnit',   inP ? 'kWp combined' : 'kWp closed');
+  set('bessUnit', inP ? 'kWh combined' : 'kWh closed');
+
+  document.getElementById('pvBreakdown').classList.toggle('show', inP);
+  document.getElementById('bessBreakdown').classList.toggle('show', inP);
+  set('pvClosedLbl',   cPvT.toLocaleString('en-ZA'));
+  set('pvPipeLbl',     pPvT.toLocaleString('en-ZA'));
+  set('bessClosedLbl', cBessT.toLocaleString('en-ZA'));
+  set('bessPipeLbl',   pBessT.toLocaleString('en-ZA'));
+
+  document.getElementById('pvLegend').classList.toggle('show', inP);
+  document.getElementById('bessLegend').classList.toggle('show', inP);
+
+  set('pvPct',   Math.round(pvPct)   + '%', pClass(pvPct));
+  set('bessPct', Math.round(bessPct) + '%', pClass(bessPct));
+  set('pvRem',   Math.max(PV_TGT   - dispPvT,   0).toLocaleString('en-ZA'));
+  set('bessRem', Math.max(BESS_TGT - dispBessT, 0).toLocaleString('en-ZA'));
+  set('pvRemLbl',   inP ? 'kWp to target' : 'kWp remaining');
+  set('bessRemLbl', inP ? 'kWh to target' : 'kWh remaining');
+
+  const pvN   = inP ? projects.filter(p => p.pv   > 0).length : closed.filter(p => p.pv   > 0).length;
+  const bessN = inP ? projects.filter(p => p.bess > 0).length : closed.filter(p => p.bess > 0).length;
+  set('pvCount', pvN);
+  set('bessCount', bessN);
+
+  bar('pvBar',   inP ? pvPct   : cPvP,   inP ? '#86efcc' : gColor(cPvP));
+  bar('bessBar', inP ? bessPct : cBessP, inP ? '#86efcc' : gColor(cBessP));
+
+  document.getElementById('completeBanner').classList.toggle('show', !inP && cPvT >= PV_TGT && cBessT >= BESS_TGT);
+  document.getElementById('pipelineBanner').classList.toggle('show', inP);
 
   if (pvMonthChart)   { pvMonthChart.destroy();   pvMonthChart = null; }
   if (bessMonthChart) { bessMonthChart.destroy(); bessMonthChart = null; }
-  pvMonthChart   = buildMonthChart('pvMonthWrap',   'pv',   '#26f0a3');
-  bessMonthChart = buildMonthChart('bessMonthWrap', 'bess', '#16e7cf');
+  pvMonthChart   = buildMonthChart('pvMonthWrap',   'pv',   '#26f0a3', '#86efcc');
+  bessMonthChart = buildMonthChart('bessMonthWrap', 'bess', '#16e7cf', '#a5f3e8');
+
+  document.getElementById('tableTitle').textContent = inP ? 'All Deals' : 'Closed Deals';
   renderTable();
 }
 
-function set(id, val, cls) { const el = document.getElementById(id); el.textContent = val; if (cls) el.className = cls; }
+function set(id, val, cls) { const el = document.getElementById(id); if (el) { el.textContent = val; if (cls) el.className = cls; } }
 function bar(id, pct, color) { const el = document.getElementById(id); el.style.width = pct + '%'; el.style.background = color; }
 
 function renderTable() {
   const wrap = document.getElementById('tableWrap');
-  if (!projects.length) { wrap.innerHTML = '<div class="empty">No deals added yet.</div>'; return; }
-  const sorted = [...projects].sort((a, b) => sortKey(a) < sortKey(b) ? -1 : 1);
+  const inP = activeView === 'pipeline';
+  const list = inP ? projects : projects.filter(p => !p.status || p.status === 'closed');
+  if (!list.length) { wrap.innerHTML = '<div class="empty">No deals added yet.</div>'; return; }
+  const sorted = [...list].sort((a, b) => sortKey(a) < sortKey(b) ? -1 : 1);
   const rows = sorted.map(p => {
     const tc = p.type === 'pv' ? 'pv' : p.type === 'bess' ? 'bess' : 'pv-bess';
     const tl = p.type === 'pv' ? 'PV' : p.type === 'bess' ? 'BESS' : 'PV + BESS';
-    const sz = p.type === 'pv' ? p.pv.toLocaleString('en-ZA') + ' kWp'
-      : p.type === 'bess' ? p.bess.toLocaleString('en-ZA') + ' kWh'
-      : p.pv.toLocaleString('en-ZA') + ' kWp / ' + p.bess.toLocaleString('en-ZA') + ' kWh';
+    const sz = p.type === 'pv'   ? p.pv.toLocaleString('en-ZA')   + ' kWp'
+             : p.type === 'bess' ? p.bess.toLocaleString('en-ZA') + ' kWh'
+             : p.pv.toLocaleString('en-ZA') + ' kWp / ' + p.bess.toLocaleString('en-ZA') + ' kWh';
+    const isClosed = !p.status || p.status === 'closed';
+    const statusCell = inP ? `<td><span class="badge ${isClosed ? 'st-closed' : 'st-pipeline'}">${isClosed ? 'Closed' : 'Pipeline'}</span></td>` : '';
     return `<tr>
       <td>${p.name}</td>
       <td><span class="badge ${tc}">${tl}</span></td>
+      ${statusCell}
       <td>${sz}</td>
       <td>${p.month || ''}</td>
       <td>
@@ -583,11 +563,13 @@ function renderTable() {
       </td>
     </tr>`;
   }).join('');
-  wrap.innerHTML = `<table><thead><tr><th>Project</th><th>Type</th><th>Size</th><th>Month</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
+  const statusHeader = inP ? '<th>Status</th>' : '';
+  wrap.innerHTML = `<table><thead><tr><th>Project</th><th>Type</th>${statusHeader}<th>Size</th><th>Month</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
 async function addProject() {
   const name    = document.getElementById('pName').value.trim();
+  const status  = document.getElementById('pStatus').value;
   const type    = document.getElementById('pType').value;
   const dateVal = document.getElementById('pDate').value;
   const pv      = parseFloat(document.getElementById('pvSz').value) || 0;
@@ -602,28 +584,30 @@ async function addProject() {
   const d = new Date(dateVal + '-01T00:00:00');
   const month = d.toLocaleDateString('en-ZA', { month: 'short', year: 'numeric' });
 
-  await apiSave({ name, type, pv: type === 'bess' ? 0 : pv, bess: type === 'pv' ? 0 : bess, month_key: dateVal, month });
+  await apiSave({ name, status, type, pv: type === 'bess' ? 0 : pv, bess: type === 'pv' ? 0 : bess, month_key: dateVal, month });
 
   editId = null;
-  document.getElementById('submitBtn').textContent = 'Add Project';
+  document.getElementById('submitBtn').textContent = 'Add Deal';
   document.getElementById('cancelBtn').classList.remove('show');
-  document.getElementById('pName').value = '';
-  document.getElementById('pDate').value = '';
-  document.getElementById('pvSz').value  = '';
-  document.getElementById('bessSz').value = '';
+  document.getElementById('pName').value    = '';
+  document.getElementById('pDate').value    = '';
+  document.getElementById('pvSz').value     = '';
+  document.getElementById('bessSz').value   = '';
 }
 
 function startEdit(id) {
   const p = projects.find(x => x.id === id);
   if (!p) return;
   editId = id;
-  document.getElementById('pName').value  = p.name;
-  document.getElementById('pType').value  = p.type;
-  document.getElementById('pDate').value  = p.month_key || '';
-  document.getElementById('pvSz').value   = p.pv   > 0 ? p.pv   : '';
-  document.getElementById('bessSz').value = p.bess > 0 ? p.bess : '';
+  document.getElementById('pName').value   = p.name;
+  document.getElementById('pStatus').value = p.status || 'closed';
+  document.getElementById('pType').value   = p.type;
+  document.getElementById('pDate').value   = p.month_key || '';
+  document.getElementById('pvSz').value    = p.pv   > 0 ? p.pv   : '';
+  document.getElementById('bessSz').value  = p.bess > 0 ? p.bess : '';
   document.getElementById('pvSizeGrp').style.display   = p.type === 'bess' ? 'none' : '';
   document.getElementById('bessSizeGrp').style.display = p.type === 'pv'   ? 'none' : '';
+  document.getElementById('pDateLabel').textContent = (p.status === 'pipeline') ? 'Expected Month' : 'Month Closed';
   document.getElementById('submitBtn').textContent = 'Save Changes';
   document.getElementById('cancelBtn').classList.add('show');
   document.querySelector('.bottom-row').scrollIntoView({ behavior: 'smooth' });
@@ -632,11 +616,12 @@ function startEdit(id) {
 
 function cancelEdit() {
   editId = null;
-  document.getElementById('pName').value = '';
-  document.getElementById('pDate').value = '';
-  document.getElementById('pvSz').value  = '';
-  document.getElementById('bessSz').value = '';
-  document.getElementById('submitBtn').textContent = 'Add Project';
+  document.getElementById('pName').value   = '';
+  document.getElementById('pDate').value   = '';
+  document.getElementById('pvSz').value    = '';
+  document.getElementById('bessSz').value  = '';
+  document.getElementById('pDateLabel').textContent = 'Month Closed';
+  document.getElementById('submitBtn').textContent = 'Add Deal';
   document.getElementById('cancelBtn').classList.remove('show');
 }
 
@@ -651,9 +636,13 @@ document.getElementById('pType').addEventListener('change', function () {
   document.getElementById('bessSizeGrp').style.display = this.value === 'pv'   ? 'none' : '';
 });
 
+document.getElementById('pStatus').addEventListener('change', function () {
+  document.getElementById('pDateLabel').textContent = this.value === 'pipeline' ? 'Expected Month' : 'Month Closed';
+});
+
 window.addEventListener('load', () => {
-  pvChart   = gauge(document.getElementById('pvGauge').getContext('2d'),   '#8ca6ae');
-  bessChart = gauge(document.getElementById('bessGauge').getContext('2d'), '#8ca6ae');
+  pvChart   = gauge(document.getElementById('pvGauge').getContext('2d'));
+  bessChart = gauge(document.getElementById('bessGauge').getContext('2d'));
   loadProjects();
 });
 </script>

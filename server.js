@@ -23,6 +23,7 @@ async function initDB() {
       created_at TIMESTAMP DEFAULT NOW()
     )
   `);
+  await pool.query(`ALTER TABLE projects ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'closed'`);
   console.log('Database ready');
 }
 initDB();
@@ -69,10 +70,10 @@ app.get('/api/projects', requireLogin, async (req, res) => {
 
 app.post('/api/projects', requireLogin, async (req, res) => {
   try {
-    const { name, type, pv, bess, month_key, month } = req.body;
+    const { name, type, pv, bess, month_key, month, status } = req.body;
     const result = await pool.query(
-      'INSERT INTO projects (name, type, pv, bess, month_key, month) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *',
-      [name, type, pv || 0, bess || 0, month_key, month]
+      'INSERT INTO projects (name, type, pv, bess, month_key, month, status) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *',
+      [name, type, pv || 0, bess || 0, month_key, month, status || 'closed']
     );
     res.json(result.rows[0]);
   } catch (e) { res.status(500).json({ error: e.message }); }
@@ -80,10 +81,10 @@ app.post('/api/projects', requireLogin, async (req, res) => {
 
 app.put('/api/projects/:id', requireLogin, async (req, res) => {
   try {
-    const { name, type, pv, bess, month_key, month } = req.body;
+    const { name, type, pv, bess, month_key, month, status } = req.body;
     const result = await pool.query(
-      'UPDATE projects SET name=$1, type=$2, pv=$3, bess=$4, month_key=$5, month=$6 WHERE id=$7 RETURNING *',
-      [name, type, pv || 0, bess || 0, month_key, month, req.params.id]
+      'UPDATE projects SET name=$1, type=$2, pv=$3, bess=$4, month_key=$5, month=$6, status=$7 WHERE id=$8 RETURNING *',
+      [name, type, pv || 0, bess || 0, month_key, month, status || 'closed', req.params.id]
     );
     res.json(result.rows[0]);
   } catch (e) { res.status(500).json({ error: e.message }); }
